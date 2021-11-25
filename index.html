@@ -7,7 +7,7 @@
 <link href="//mozilla.github.io/pdf.js/web/viewer.css" rel="stylesheet" type="text/css" />
 <style type="text/css">
 
-#the-canvas {
+.pdf-canvas {
   border: 1px solid black;
   direction: ltr;
 }
@@ -25,9 +25,10 @@
   &nbsp; &nbsp;
   <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
 </div>
-
-<canvas id="the-canvas"></canvas>
-<div class="textLayer"></div>
+<div id="canvas-container">
+	<!-- <canvas id="the-canvas"></canvas>
+	<div class="textLayer"></div> -->
+</div>
 
 <script>
 // If absolute URL from the remote server is provided, configure the CORS
@@ -45,19 +46,20 @@ var pdfDoc = null,
     pageRendering = false,
     pageNumPending = null,
     //scale = 0.8,
-    scale = 1,
-    canvas = document.getElementById('the-canvas'),
-    ctx = canvas.getContext('2d');
+    scale = 1;
+    // canvas = document.getElementById('the-canvas'),
+    // ctx = canvas.getContext('2d');
 
 /**
  * Get page info from document, resize canvas accordingly, and render page.
  * @param num Page number.
  */
-function renderPage(num) {
+function renderPage(num, canvas, textLayer) {
   pageRendering = true;
   // Using promise to fetch the page
   pdfDoc.getPage(num).then(function(page) {
     var viewport = page.getViewport({scale: scale});
+	var ctx = canvas.getContext('2d');
     canvas.height = viewport.height;
     canvas.width = viewport.width;
 
@@ -82,7 +84,7 @@ function renderPage(num) {
     }).then(function(textContent) {
 
       // Assign CSS to the textLayer element
-      var textLayer = document.querySelector(".textLayer");
+    //   var textLayer = document.querySelector(".textLayer");
 
       textLayer.style.left = canvas.offsetLeft + 'px';
       textLayer.style.top = canvas.offsetTop + 'px';
@@ -100,7 +102,7 @@ function renderPage(num) {
   });
 
   // Update page counters
-  document.getElementById('page_num').textContent = num;
+//   document.getElementById('page_num').textContent = num;
 }
 
 /**
@@ -145,9 +147,16 @@ document.getElementById('next').addEventListener('click', onNextPage);
 pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
   pdfDoc = pdfDoc_;
   document.getElementById('page_count').textContent = pdfDoc.numPages;
-
+  for (page = 1; page <= pdfDoc.numPages; page++) {
+	var canvas = document.createElement('canvas');
+	canvas.classList.add('pdf-canvas');
+	var textLayer = document.createElement('div');
+	document.getElementById("canvas-container").appendChild(canvas);
+	canvas.parentNode.insertBefore(textLayer, canvas.nextSibling);
+	renderPage(page, canvas, textLayer);
+  }
   // Initial/first page rendering
-  renderPage(pageNum);
+//   renderPage(pageNum);
 });
 
 </script>
