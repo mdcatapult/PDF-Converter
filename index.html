@@ -17,18 +17,7 @@
 
 <body>
 
-<h1>PDF.js Previous/Next example</h1>
-
-<div>
-  <button id="prev">Previous</button>
-  <button id="next">Next</button>
-  &nbsp; &nbsp;
-  <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
-</div>
-<div id="canvas-container">
-	<!-- <canvas id="the-canvas"></canvas>
-	<div class="textLayer"></div> -->
-</div>
+<div id="pdf-container"></div>
 
 <script>
 // If absolute URL from the remote server is provided, configure the CORS
@@ -45,10 +34,7 @@ var pdfDoc = null,
     pageNum = 1,
     pageRendering = false,
     pageNumPending = null,
-    //scale = 0.8,
     scale = 1;
-    // canvas = document.getElementById('the-canvas'),
-    // ctx = canvas.getContext('2d');
 
 /**
  * Get page info from document, resize canvas accordingly, and render page.
@@ -84,8 +70,6 @@ function renderPage(num, canvas, textLayer) {
     }).then(function(textContent) {
 
       // Assign CSS to the textLayer element
-    //   var textLayer = document.querySelector(".textLayer");
-
       textLayer.style.left = canvas.offsetLeft + 'px';
       textLayer.style.top = canvas.offsetTop + 'px';
       textLayer.style.height = canvas.offsetHeight + 'px';
@@ -100,63 +84,23 @@ function renderPage(num, canvas, textLayer) {
       });
     });
   });
-
-  // Update page counters
-//   document.getElementById('page_num').textContent = num;
 }
 
 /**
- * If another page rendering in progress, waits until the rendering is
- * finised. Otherwise, executes rendering immediately.
- */
-function queueRenderPage(num) {
-  if (pageRendering) {
-    pageNumPending = num;
-  } else {
-    renderPage(num);
-  }
-}
-
-/**
- * Displays previous page.
- */
-function onPrevPage() {
-  if (pageNum <= 1) {
-    return;
-  }
-  pageNum--;
-  queueRenderPage(pageNum);
-}
-document.getElementById('prev').addEventListener('click', onPrevPage);
-
-/**
- * Displays next page.
- */
-function onNextPage() {
-  if (pageNum >= pdfDoc.numPages) {
-    return;
-  }
-  pageNum++;
-  queueRenderPage(pageNum);
-}
-document.getElementById('next').addEventListener('click', onNextPage);
-
-/**
- * Asynchronously downloads PDF.
+ * Asynchronously downloads PDF and then renders each page in a separate canvas
+ * with a selectable textLayer on top.
  */
 pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
   pdfDoc = pdfDoc_;
-  document.getElementById('page_count').textContent = pdfDoc.numPages;
   for (page = 1; page <= pdfDoc.numPages; page++) {
 	var canvas = document.createElement('canvas');
 	canvas.classList.add('pdf-canvas');
 	var textLayer = document.createElement('div');
-	document.getElementById("canvas-container").appendChild(canvas);
+	textLayer.classList.add("textLayer");
+	document.getElementById("pdf-container").appendChild(canvas);
 	canvas.parentNode.insertBefore(textLayer, canvas.nextSibling);
 	renderPage(page, canvas, textLayer);
   }
-  // Initial/first page rendering
-//   renderPage(pageNum);
 });
 
 </script>
