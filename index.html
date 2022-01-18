@@ -11,7 +11,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.1);
-            overflow: auto;
+            overflow: initial;
         }
 
         .pdf-page-canvas {
@@ -99,6 +99,7 @@
      * Asynchronously downloads PDF and then renders each page in a separate canvas
      * with a selectable textLayer on top.
      */
+    var counter = 0
     pdfjsLib.getDocument(url).promise.then(function (pdfDoc_) {
         pdfDoc = pdfDoc_;
         viewer = document.getElementById('pdf-viewer');
@@ -108,16 +109,17 @@
             canvas.className = 'pdf-page-canvas';
             viewer.appendChild(canvas)
 
+
             var textLayer = document.createElement('div');
             textLayer.classList.add("textLayer");
-            // document.getElementById("pdf-container").appendChild(canvas);
             canvas.parentNode.insertBefore(textLayer, canvas.nextSibling);
+
             renderPage(page, canvas, textLayer);
         }
     });
 
 </script>
 
-<div id ='pdf-viewer'></div>
+<div id='pdf-viewer'></div>
 </body>
 </html>
