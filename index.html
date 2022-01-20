@@ -92,8 +92,20 @@
                     viewport: viewport,
                     textDivs: []
                 });
+
+                if (getTextLayerElements()) {
+                    textLayer.style.left = '0px';
+                    textLayer.style.margin = '0px auto';
+                }
+
             });
         });
+    }
+
+    function getTextLayerElements()  {
+        return Array.from(document.getElementsByClassName('textLayer')).filter(element => {
+            return element
+        })
     }
 
     /**
