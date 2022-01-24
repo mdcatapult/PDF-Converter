@@ -16,7 +16,7 @@
 
         .pdf-page-canvas {
             display: block;
-            margin: 1px auto;
+            margin: 2px auto;
             border: 1px solid rgba(0, 0, 0, 0.2);
         }
 
@@ -39,7 +39,6 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 
     var pdfDoc = null,
-        pageNum = 1,
         pageRendering = false,
         pageNumPending = null,
         scale = 1;
@@ -93,8 +92,7 @@
                 });
 
                 textLayer.style.left = '0px';
-                textLayer.style.margin = '1px auto';
-
+                textLayer.style.margin = '2px auto';
 
             });
         });
@@ -104,7 +102,6 @@
      * Asynchronously downloads PDF and then renders each page in a separate canvas
      * with a selectable textLayer on top.
      */
-    var counter = 0
     pdfjsLib.getDocument(url).promise.then(function (pdfDoc_) {
         pdfDoc = pdfDoc_;
         viewer = document.getElementById('pdf-viewer');
