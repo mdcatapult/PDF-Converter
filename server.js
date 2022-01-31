@@ -10,7 +10,6 @@ startFileServer(outputFilename)
 
 const requestListener = function (req, res) {
     const path = req.url.split('=')[1]
-    
     downloadPDF(path, outputFilename).then(() => {
         
         var fileName = "/index.html";
@@ -23,8 +22,9 @@ const requestListener = function (req, res) {
         .catch(err => {
             res.writeHead(500);
             res.end(err);
-            return;
         });
+    }).catch(e => {
+        req.uri ? console.log(e) : console.log('warn: Invalid URI on URL:', req.url)
     })
 };
 
