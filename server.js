@@ -4,14 +4,12 @@ const fs = require('fs')
 const express = require('express')
 
 const app = express();
-const host = '0.0.0.0';
 const port = 8000;
 
 const outputFilename = `${process.cwd()}/test_download.pdf`
 startFileServer(outputFilename)
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
 
     const path = req.url.split('=')[1]
     downloadPDF(path, outputFilename).then(() => {
