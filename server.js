@@ -1,37 +1,40 @@
 const http = require("http");
 const request = require('request-promise-native');
 const fs = require('fs')
+const express = require('express')
 
-const host = 'localhost';
+const app = express();
+const host = '0.0.0.0';
 const port = 8000;
 
 const outputFilename = `${process.cwd()}/test_download.pdf`
 startFileServer(outputFilename)
 
-const requestListener = function (req, res) {
+app.get('/', (req, res) => {
+    res.send('Hello World!')
+
     const path = req.url.split('=')[1]
     downloadPDF(path, outputFilename).then(() => {
-        
+
         var fileName = "/index.html";
         fs.promises.readFile(__dirname + fileName)
-        .then(contents => {
-            res.setHeader("Content-Type", "text/html");
-            res.writeHead(200);
-            res.end(contents);
-        })
-        .catch(err => {
-            res.writeHead(500);
-            res.end(err);
-        });
+            .then(contents => {
+                res.setHeader("Content-Type", "text/html");
+                res.writeHead(200);
+                res.end(contents);
+            })
+            .catch(err => {
+                res.writeHead(500);
+                res.end(err);
+            });
     }).catch(e => {
         req.uri ? console.log(e) : console.log('warn: Invalid URI on URL:', req.url)
     })
-};
+})
 
-const server = http.createServer(requestListener);
-server.listen(port, host, () => {
-    console.log(`Server is running on http://${host}:${port}`);
-});
+app.listen(port, () => {
+    console.log(`example app listening on port ${port}`)
+})
 
 function startFileServer(filePath) {
     http.createServer(function (request, response) {
@@ -47,7 +50,7 @@ function startFileServer(filePath) {
                 else {
                     response.writeHead(500);
                     response.end('Sorry, check with the site admin for error: '+error.code+' ..\n');
-                    response.end(); 
+                    response.end();
                 }
             }
             else {
@@ -55,7 +58,7 @@ function startFileServer(filePath) {
                     'Content-Type': 'application/pdf',
                     'Access-Control-Allow-Origin': '*'
                 });
-            
+
                 response.end(content, 'utf-8');
             }
         });
@@ -67,5 +70,3 @@ async function downloadPDF(pdfURL, outputFilename) {
     let pdfBuffer = await request.get({uri: pdfURL, encoding: null});
     fs.writeFileSync(outputFilename, pdfBuffer);
 }
-
-
