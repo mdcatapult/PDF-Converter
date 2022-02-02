@@ -1,0 +1,15 @@
+stages:
+  - release
+
+release:
+  stage: release
+  image: registry.mdcatapult.io/informatics/docker-images/ci/node
+  tags:
+    - wopr
+  script:
+    - /scripts/release.sh -b
+  only:
+    - master
+  except:
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /^Setting version to.*/
