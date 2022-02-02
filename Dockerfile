@@ -11,7 +11,7 @@ COPY . .
 EXPOSE 8000
 EXPOSE 8125
 
-CMD [ "node", "server.js"]
+CMD [ "node", "src/server.js"]
 
 
 
