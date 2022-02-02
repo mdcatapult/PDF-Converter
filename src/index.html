@@ -1,127 +1,134 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-    <script src="//mozilla.github.io/pdf.js/build/pdf.js" crossorigin="anonymous"></script>
-    <link href="//mozilla.github.io/pdf.js/web/viewer.css" rel="stylesheet" type="text/css"/>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+    />
+    <script
+      src="//mozilla.github.io/pdf.js/build/pdf.js"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      href="//mozilla.github.io/pdf.js/web/viewer.css"
+      rel="stylesheet"
+      type="text/css"
+    />
     <style type="text/css">
+      #pdf-viewer {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.1);
+        overflow: initial;
+        position: absolute;
+      }
 
-        #pdf-viewer {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.1);
-            overflow: initial;
-            position: absolute;
-        }
-
-        .pdf-page-canvas {
-            display: block;
-            margin: 2px auto;
-            border: 1px solid rgba(0, 0, 0, 0.2);
-        }
-
+      .pdf-page-canvas {
+        display: block;
+        margin: 2px auto;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
+    <div id="pdf-container"></div>
 
-<div id="pdf-container"></div>
+    <script>
+      // If absolute URL from the remote server is provided, configure the CORS
+      // header on that server.
 
-<script>
-    // If absolute URL from the remote server is provided, configure the CORS
-    // header on that server.
+      var url = "http://localhost:8125";
+      // Loaded via <script> tag, create shortcut to access PDF.js exports.
+      var pdfjsLib = window["pdfjs-dist/build/pdf"];
 
-    var url = 'http://localhost:8125'
-    // Loaded via <script> tag, create shortcut to access PDF.js exports.
-    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+      // The workerSrc property shall be specified.
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "//mozilla.github.io/pdf.js/build/pdf.worker.js";
 
-    // The workerSrc property shall be specified.
-    pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
-
-    var pdfDoc = null,
+      var pdfDoc = null,
         pageRendering = false,
         pageNumPending = null,
         scale = 1;
 
-    /**
-     * Get page info from document, resize canvas accordingly, and render page.
-     * @param num Page number.
-     */
-    function renderPage(num, canvas, textLayer) {
+      /**
+       * Get page info from document, resize canvas accordingly, and render page.
+       * @param num Page number.
+       */
+      function renderPage(num, canvas, textLayer) {
         pageRendering = true;
         // Using promise to fetch the page
         pdfDoc.getPage(num).then(function (page) {
-            var viewport = page.getViewport({scale: scale});
-            var ctx = canvas.getContext('2d');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
+          var viewport = page.getViewport({ scale: scale });
+          var ctx = canvas.getContext("2d");
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
 
-            // Render PDF page into canvas context
-            var renderContext = {
-                canvasContext: ctx,
-                viewport: viewport
-            };
-            var renderTask = page.render(renderContext);
+          // Render PDF page into canvas context
+          var renderContext = {
+            canvasContext: ctx,
+            viewport: viewport,
+          };
+          var renderTask = page.render(renderContext);
 
-            // Wait for rendering to finish
-            renderTask.promise.then(function () {
-                pageRendering = false;
-                if (pageNumPending !== null) {
-                    // New page rendering is pending
-                    renderPage(pageNumPending);
-                    pageNumPending = null;
-                }
-            }).then(function () {
-                // Returns a promise, on resolving it will return text contents of the page
-                return page.getTextContent();
-            }).then(function (textContent) {
+          // Wait for rendering to finish
+          renderTask.promise
+            .then(function () {
+              pageRendering = false;
+              if (pageNumPending !== null) {
+                // New page rendering is pending
+                renderPage(pageNumPending);
+                pageNumPending = null;
+              }
+            })
+            .then(function () {
+              // Returns a promise, on resolving it will return text contents of the page
+              return page.getTextContent();
+            })
+            .then(function (textContent) {
+              // Assign CSS to the textLayer element
+              textLayer.style.left = canvas.offsetLeft + "px";
+              textLayer.style.top = canvas.offsetTop + "px";
+              textLayer.style.height = canvas.offsetHeight + "px";
+              textLayer.style.width = canvas.offsetWidth + "px";
+              textLayer.style.overflow = "visible";
 
-                // Assign CSS to the textLayer element
-                textLayer.style.left = canvas.offsetLeft + 'px';
-                textLayer.style.top = canvas.offsetTop + 'px';
-                textLayer.style.height = canvas.offsetHeight + 'px';
-                textLayer.style.width = canvas.offsetWidth + 'px';
-                textLayer.style.overflow = 'visible';
+              // Pass the data to the method for rendering of text over the pdf canvas.
+              pdfjsLib.renderTextLayer({
+                textContent: textContent,
+                container: textLayer,
+                viewport: viewport,
+                textDivs: [],
+              });
 
-                // Pass the data to the method for rendering of text over the pdf canvas.
-                pdfjsLib.renderTextLayer({
-                    textContent: textContent,
-                    container: textLayer,
-                    viewport: viewport,
-                    textDivs: []
-                });
-
-                textLayer.style.left = '0px';
-                textLayer.style.margin = '2px auto';
-
+              textLayer.style.left = "0px";
+              textLayer.style.margin = "2px auto";
             });
         });
-    }
+      }
 
-    /**
-     * Asynchronously downloads PDF and then renders each page in a separate canvas
-     * with a selectable textLayer on top.
-     */
-    pdfjsLib.getDocument(url).promise.then(function (pdfDoc_) {
+      /**
+       * Asynchronously downloads PDF and then renders each page in a separate canvas
+       * with a selectable textLayer on top.
+       */
+      pdfjsLib.getDocument(url).promise.then(function (pdfDoc_) {
         pdfDoc = pdfDoc_;
-        viewer = document.getElementById('pdf-viewer');
+        viewer = document.getElementById("pdf-viewer");
 
         for (page = 1; page <= pdfDoc_.numPages; page++) {
-            var canvas = document.createElement('canvas');
-            canvas.className = 'pdf-page-canvas';
-            viewer.appendChild(canvas)
+          var canvas = document.createElement("canvas");
+          canvas.className = "pdf-page-canvas";
+          viewer.appendChild(canvas);
 
+          var textLayer = document.createElement("div");
+          textLayer.classList.add("textLayer");
+          canvas.parentNode.insertBefore(textLayer, canvas.nextSibling);
 
-            var textLayer = document.createElement('div');
-            textLayer.classList.add("textLayer");
-            canvas.parentNode.insertBefore(textLayer, canvas.nextSibling);
-
-            renderPage(page, canvas, textLayer);
+          renderPage(page, canvas, textLayer);
         }
-    });
+      });
+    </script>
 
-</script>
-
-<div id='pdf-viewer'></div>
-</body>
+    <div id="pdf-viewer"></div>
+  </body>
 </html>

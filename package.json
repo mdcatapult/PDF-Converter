@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node src/server.js",
     "lint": "npx prettier --check src/*",
-    "lint:fix": "npx prettier --write ."
+    "lint:fix": "npx prettier --write src/*"
   },
   "dependencies": {
     "express": "^4.17.2",
