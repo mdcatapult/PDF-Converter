@@ -1,6 +1,26 @@
 stages:
+  - test-lint-build
   - publish
   - release
+
+test-lint-build:
+  stage: test-lint-build
+  image: registry.mdcatapult.io/informatics/docker-images/ci/node
+  tags:
+    - wopr
+  artifacts:
+    paths:
+      - src/*
+  before_script:
+    - apt-get -yqq update && apt-get upgrade -yqq chromium libxss1 xvfb
+    - export CHROME_BIN=/usr/bin/chromium
+    - npm install
+  script:
+    - npm run lint
+  coverage: /Lines\s+:\s(\d+\.?\d*)%\s\(\s\d+\/\d+\s\)/
+  except:
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /^Setting version to.*/
 
 publish:
   stage: publish
