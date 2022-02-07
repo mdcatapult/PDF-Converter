@@ -29,10 +29,8 @@ app.get("/download-pdf", (req, res) => {
       pdf2base64(outputFilename)
         .then((response) => {
           res.render("index.html", { pdfBase64Encoded: response });
-          res.writeHead(200);
         })
         .catch((error) => {
-          // console.log(error);
           res.writeHead(500);
           res.end(error);
         });
@@ -40,7 +38,6 @@ app.get("/download-pdf", (req, res) => {
     .catch((error) => {
       res.writeHead(500);
       res.end(error);
-      // console.log(error)
     });
 });
 
