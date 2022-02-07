@@ -7,7 +7,7 @@ const port = 8000;
 const pdf2base64 = require("pdf-to-base64");
 const bodyParser = require("body-parser");
 
-const outputFilename = `${process.cwd()}/test_download.pdf`;
+const outputFilename = `${process.cwd()}/downloaded_pdf.pdf`;
 
 app.use(express.static("src"));
 app.use(bodyParser.urlencoded({ extend: true }));
@@ -16,22 +16,36 @@ app.set("view engine", "html");
 app.set("views", __dirname);
 
 app.get("/download-pdf", (req, res) => {
-  pdf2base64(outputFilename)
-    .then((response) => {
-      // console.log(response); //cGF0aC90by9maWxlLmpwZw==
-      res.render("index.html", { pdfBase64Encoded: response });
+  const path = req.url.split("=")[1];
+
+  if (!path.endsWith(".pdf")) {
+    res.writeHead(500);
+    res.end("error: invalid PDF format");
+    return;
+  }
+
+  downloadPDF(path, outputFilename)
+    .then(() => {
+      pdf2base64(outputFilename)
+        .then((response) => {
+          res.render("index.html", { pdfBase64Encoded: response });
+          res.writeHead(200);
+        })
+        .catch((error) => {
+          // console.log(error);
+          res.writeHead(500);
+          res.end(error);
+        });
     })
     .catch((error) => {
-      console.log(error); //Exepection error....
+      res.writeHead(500);
+      res.end(error);
+      // console.log(error)
     });
 });
 
-app.get("/", function (req, res) {
-  // res.render('index.html',{email:data.email,password:data.password});
-});
-
 app.listen(port, () => {
-  console.log(`example app listening on port ${port}`);
+  console.log(`server is listening on port ${port}`);
 });
 
 async function downloadPDF(pdfURL, outputFilename) {
