@@ -1,10 +1,9 @@
 // Loaded via <script> tag, create shortcut to access PDF.js exports.
 var pdfjsLib = window["pdfjs-dist/build/pdf"];
 
-const pdfValue = document.getElementById("pdf-value");
+const pdfValue = document.getElementById("pdf-base_64_encoded-value");
 
-var pdfData = atob(pdfValue.innerText);
-// console.log('pdf value content', pdfValue.innerText)
+var pdfBase64ToBinary = atob(pdfValue.innerText);
 
 // The workerSrc property shall be specified.
 pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -75,19 +74,21 @@ function renderPage(num, canvas, textLayer) {
  * Asynchronously downloads PDF and then renders each page in a separate canvas
  * with a selectable textLayer on top.
  */
-pdfjsLib.getDocument({ data: pdfData }).promise.then(function (pdfDoc_) {
-  pdfDoc = pdfDoc_;
-  var viewer = document.getElementById("pdf-viewer");
+pdfjsLib
+  .getDocument({ data: pdfBase64ToBinary })
+  .promise.then(function (pdfDoc_) {
+    pdfDoc = pdfDoc_;
+    var viewer = document.getElementById("pdf-viewer");
 
-  for (let page = 1; page <= pdfDoc_.numPages; page++) {
-    var canvas = document.createElement("canvas");
-    canvas.className = "pdf-page-canvas";
-    viewer.appendChild(canvas);
+    for (let page = 1; page <= pdfDoc_.numPages; page++) {
+      var canvas = document.createElement("canvas");
+      canvas.className = "pdf-page-canvas";
+      viewer.appendChild(canvas);
 
-    var textLayer = document.createElement("div");
-    textLayer.classList.add("textLayer");
-    canvas.parentNode.insertBefore(textLayer, canvas.nextSibling);
+      var textLayer = document.createElement("div");
+      textLayer.classList.add("textLayer");
+      canvas.parentNode.insertBefore(textLayer, canvas.nextSibling);
 
-    renderPage(page, canvas, textLayer);
-  }
-});
+      renderPage(page, canvas, textLayer);
+    }
+  });

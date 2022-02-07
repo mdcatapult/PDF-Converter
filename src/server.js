@@ -5,26 +5,26 @@ const express = require("express");
 const app = express();
 const port = 8000;
 const pdf2base64 = require("pdf-to-base64");
-const bodyParser = require("body-parser");
 
 const outputFilename = `${process.cwd()}/downloaded_pdf.pdf`;
 
 app.use(express.static("src"));
-app.use(bodyParser.urlencoded({ extend: true }));
+// ejs is a tool that enables us to send variables to an index.html file via res.render
 app.engine("html", require("ejs").renderFile);
 app.set("view engine", "html");
 app.set("views", __dirname);
 
 app.get("/download-pdf", (req, res) => {
-  const path = req.url.split("=")[1];
+  //split on = so we only retrieve the PDF URL
+  const pdfURl = req.url.split("=")[1];
 
-  if (!path.endsWith(".pdf")) {
+  if (!pdfURl.endsWith(".pdf")) {
     res.writeHead(500);
     res.end("error: invalid PDF format");
     return;
   }
 
-  downloadPDF(path, outputFilename)
+  downloadPDF(pdfURl, outputFilename)
     .then(() => {
       pdf2base64(outputFilename)
         .then((response) => {
