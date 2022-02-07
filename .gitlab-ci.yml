@@ -57,5 +57,3 @@ release:
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /^Setting version to.*/
-
-
