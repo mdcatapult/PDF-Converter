@@ -15,7 +15,7 @@ app.set("view engine", "html");
 app.set("views", __dirname);
 
 app.get("/download-pdf", (req, res) => {
-  //split on = so we only retrieve the PDF URL
+  //split on '=' so we only retrieve the PDF URL from the full URL path
   const pdfURl = req.url.split("=")[1];
 
   if (!pdfURl.endsWith(".pdf")) {
