@@ -1,6 +1,5 @@
 .idea
 package-lock.json
 node_modules
-src/bundle.js
 .gitignore
 downloaded_pdf.pdf
