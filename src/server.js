@@ -19,21 +19,18 @@ app.get("/download-pdf", (req, res) => {
   const pdfURl = req.url.split("=")[1];
 
   if (!pdfURl.endsWith(".pdf")) {
-    res.writeHead(500);
+    res.writeHead(400);
     res.end("error: invalid PDF format");
     return;
   }
 
   downloadPDF(pdfURl, outputFilename)
     .then(() => {
-      pdf2base64(outputFilename)
-        .then((response) => {
-          res.render("index.html", { pdfBase64Encoded: response });
-        })
-        .catch((error) => {
-          res.writeHead(500);
-          res.end(error);
-        });
+      pdf2base64(outputFilename).then((response) => {
+        // This line will pass the pdfBase64Encoded value (response) to the index.html file. We access this variable
+        // from the index.html with this value <%= pdfBase64Encoded %>
+        res.render("index.html", { pdfBase64Encoded: response });
+      });
     })
     .catch((error) => {
       res.writeHead(500);

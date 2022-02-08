@@ -1,15 +1,16 @@
 // Loaded via <script> tag, create shortcut to access PDF.js exports.
-var pdfjsLib = window["pdfjs-dist/build/pdf"];
+let pdfjsLib = window["pdfjs-dist/build/pdf"];
 
 const pdfValue = document.getElementById("pdf-base_64_encoded-value");
 
-var pdfBase64ToBinary = atob(pdfValue.innerText);
+// We convert the base64 encoded pdf into bytes which we will pass into the getDocument method
+let pdfBase64ToBinary = atob(pdfValue.innerText);
 
 // The workerSrc property shall be specified.
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   "//mozilla.github.io/pdf.js/build/pdf.worker.js";
 
-var pdfDoc = null,
+let pdfDoc = null,
   pageRendering = false,
   pageNumPending = null,
   scale = 1;
@@ -22,17 +23,17 @@ function renderPage(num, canvas, textLayer) {
   pageRendering = true;
   // Using promise to fetch the page
   pdfDoc.getPage(num).then(function (page) {
-    var viewport = page.getViewport({ scale: scale });
-    var ctx = canvas.getContext("2d");
+    let viewport = page.getViewport({ scale: scale });
+    let ctx = canvas.getContext("2d");
     canvas.height = viewport.height;
     canvas.width = viewport.width;
 
     // Render PDF page into canvas context
-    var renderContext = {
+    let renderContext = {
       canvasContext: ctx,
       viewport: viewport,
     };
-    var renderTask = page.render(renderContext);
+    let renderTask = page.render(renderContext);
 
     // Wait for rendering to finish
     renderTask.promise
@@ -74,18 +75,18 @@ function renderPage(num, canvas, textLayer) {
  * Asynchronously downloads PDF and then renders each page in a separate canvas
  * with a selectable textLayer on top.
  */
-pdfjsLib
+pdfjsLib // pass in the byte PDF to this method and then display to the user
   .getDocument({ data: pdfBase64ToBinary })
   .promise.then(function (pdfDoc_) {
     pdfDoc = pdfDoc_;
-    var viewer = document.getElementById("pdf-viewer");
+    let viewer = document.getElementById("pdf-viewer");
 
     for (let page = 1; page <= pdfDoc_.numPages; page++) {
-      var canvas = document.createElement("canvas");
+      let canvas = document.createElement("canvas");
       canvas.className = "pdf-page-canvas";
       viewer.appendChild(canvas);
 
-      var textLayer = document.createElement("div");
+      let textLayer = document.createElement("div");
       textLayer.classList.add("textLayer");
       canvas.parentNode.insertBefore(textLayer, canvas.nextSibling);
 
