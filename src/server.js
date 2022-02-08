@@ -2,10 +2,11 @@ const http = require("http");
 const request = require("request-promise-native");
 const fs = require("fs");
 const express = require("express");
-const app = express();
-const port = 8000;
+require("dotenv").config();
 const pdf2base64 = require("pdf-to-base64");
 
+const app = express();
+const port = process.env.PORT;
 const outputFilename = `${process.cwd()}/downloaded_pdf.pdf`;
 
 app.use(express.static("src"));
