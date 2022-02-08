@@ -11,8 +11,6 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
   "//mozilla.github.io/pdf.js/build/pdf.worker.js";
 
 let pdfDoc = null,
-  pageRendering = false,
-  pageNumPending = null,
   scale = 1;
 
 /**
@@ -20,7 +18,6 @@ let pdfDoc = null,
  * @param num Page number.
  */
 function renderPage(num, canvas, textLayer) {
-  pageRendering = true;
   // Using promise to fetch the page
   pdfDoc.getPage(num).then(function (page) {
     let viewport = page.getViewport({ scale: scale });
@@ -37,14 +34,6 @@ function renderPage(num, canvas, textLayer) {
 
     // Wait for rendering to finish
     renderTask.promise
-      .then(function () {
-        pageRendering = false;
-        if (pageNumPending !== null) {
-          // New page rendering is pending
-          renderPage(pageNumPending);
-          pageNumPending = null;
-        }
-      })
       .then(function () {
         // Returns a promise, on resolving it will return text contents of the page
         return page.getTextContent();
