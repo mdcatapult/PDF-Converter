@@ -15,16 +15,18 @@ app.set("view engine", "html");
 app.set("views", __dirname);
 
 app.get("/html", (req, res) => {
-  //split on '=' so we only retrieve the PDF URL from the full URL path
-  const pdfURl = req.url.split("=")[1];
+  //split on query param '?url' so we only retrieve the PDF URL from the full URL path
+  const extractPDFURl = req.url.split("?url=")[1];
 
-  if (!pdfURl.endsWith(".pdf")) {
+  if (!extractPDFURl.endsWith(".pdf")) {
     res.writeHead(400);
     res.end("error: invalid PDF format");
     return;
   }
 
-  downloadPDF(pdfURl, outputFilename)
+  const pdfURL = new URL(extractPDFURl);
+
+  downloadPDF(pdfURL, outputFilename)
     .then(() => {
       pdf2base64(outputFilename).then((response) => {
         // This line will pass the pdfBase64Encoded value (response) to the index.html file. We access this variable
