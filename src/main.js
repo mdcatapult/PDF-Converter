@@ -64,7 +64,8 @@ function renderPage(num, canvas, textLayer) {
  * Asynchronously downloads PDF and then renders each page in a separate canvas
  * with a selectable textLayer on top.
  */
-pdfjsLib // pass in the byte PDF to this method and then display to the user
+pdfjsLib // getDocument data parameter requires a PDF in binary format, this is why we first initially base64 encode it then
+  //convert it to binary data via the atob() method above, See https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib.html
   .getDocument({ data: pdfBase64ToBinary })
   .promise.then(function (pdfDoc_) {
     pdfDoc = pdfDoc_;
