@@ -1,5 +1,4 @@
 .idea
 package-lock.json
 node_modules
-.gitignore
 downloaded_pdf.pdf
