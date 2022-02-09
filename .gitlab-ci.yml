@@ -47,7 +47,6 @@ publish:
 
 release:
   stage: release
-  image: registry.mdcatapult.io/informatics/docker-images/ci/node
   tags:
     - wopr
   script:
