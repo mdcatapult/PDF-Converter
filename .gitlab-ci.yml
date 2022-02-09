@@ -51,7 +51,7 @@ release:
   tags:
     - wopr
   script:
-    - release.sh -b -r develop
+    - /scripts/release.sh -b -r develop
   only:
     - master
   except:
