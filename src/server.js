@@ -17,6 +17,7 @@ app.set("views", __dirname);
 
 app.get("/html", (req, res) => {
   const url = req.protocol + "://" + req.get("host") + req.originalUrl;
+  // extract the PDF URL from the request URL
   const pdfURL = new URL(url).searchParams.get("url");
 
   if (!pdfURL.endsWith(".pdf")) {
