@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+    />
+    <script
+      src="//mozilla.github.io/pdf.js/build/pdf.js"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      href="//mozilla.github.io/pdf.js/web/viewer.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <style type="text/css">
+      #pdf-viewer {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.1);
+        overflow: initial;
+        position: absolute;
+      }
+
+      .pdf-page-canvas {
+        display: block;
+        margin: 2px auto;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+      }
+    </style>
+  </head>
+
+  <body>
+    <p id="pdf-base_64_encoded-value" style="display: none"><%= pdfBase64Encoded %></p>
+
+    <div id="pdf-viewer"></div>
+    <div id="pdf-container"></div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
