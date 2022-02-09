@@ -3,6 +3,11 @@ stages:
   - publish
   - release
 
+default:
+  image: registry.mdcatapult.io/informatics/docker-images/ci/node
+  tags:
+    - wopr
+
 test-lint-build:
   stage: test-lint-build
   image: registry.mdcatapult.io/informatics/docker-images/ci/node
@@ -10,7 +15,8 @@ test-lint-build:
     - wopr
   artifacts:
     paths:
-      - src/*
+      - src/main.js
+      - src/server.js
   before_script:
     - apt-get -yqq update && apt-get upgrade -yqq chromium libxss1 xvfb
     - export CHROME_BIN=/usr/bin/chromium
@@ -24,21 +30,15 @@ test-lint-build:
 
 publish:
   stage: publish
-  tags:
-    - wopr
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
+  tags:
+    - wopr
   before_script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
   script:
-    - >
-      /kaniko/executor
-      --context $CI_PROJECT_DIR
-      --build-arg NEXUS_PASSWORD=$NEXUS_PASSWORD
-      --build-arg CONSUMER_VERSION=$CI_COMMIT_REF_SLUG
-      --build-arg CONSUMER_VERSION_HASH=$CI_COMMIT_SHORT_SHA
-      --destination "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+    - /kaniko/executor --context $CI_PROJECT_DIR --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   except:
     refs:
       - master
@@ -47,10 +47,8 @@ publish:
 
 release:
   stage: release
-  tags:
-    - wopr
   script:
-    - release.sh -b -r develop
+    - cictl exec release node
   only:
     - master
   except:
@@ -59,15 +57,16 @@ release:
 
 publish-master:
   stage: publish
-  tags:
-    - wopr
   image:
     name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [ "" ]
+    entrypoint: [""]
+  tags:
+    - wopr
   before_script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
   script:
-    - /kaniko/executor --context $CI_PROJECT_DIR --build-arg VERSION_HASH=$CI_COMMIT_SHORT_SHA --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME --destination $CI_REGISTRY_IMAGE
+    - /kaniko/executor --context $CI_PROJECT_DIR --destination $CI_REGISTRY_IMAGE
+    - /kaniko/executor --context $CI_PROJECT_DIR --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
   only:
     refs:
       - tags
