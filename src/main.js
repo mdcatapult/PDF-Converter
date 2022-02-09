@@ -1,10 +1,10 @@
 // Loaded via <script> tag, create shortcut to access PDF.js exports.
-let pdfjsLib = window["pdfjs-dist/build/pdf"];
+const pdfjsLib = window["pdfjs-dist/build/pdf"];
 
 const pdfValue = document.getElementById("pdf-base_64_encoded-value");
 
 // We convert the base64 encoded pdf into bytes which we will pass into the getDocument method
-let pdfBase64ToBinary = atob(pdfValue.innerText);
+const pdfBase64ToBinary = atob(pdfValue.innerText);
 
 // The workerSrc property shall be specified.
 pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -20,17 +20,17 @@ let pdfDoc = null,
 function renderPage(num, canvas, textLayer) {
   // Using promise to fetch the page
   pdfDoc.getPage(num).then(function (page) {
-    let viewport = page.getViewport({ scale: scale });
-    let ctx = canvas.getContext("2d");
+    const viewport = page.getViewport({ scale: scale });
+    const ctx = canvas.getContext("2d");
     canvas.height = viewport.height;
     canvas.width = viewport.width;
 
     // Render PDF page into canvas context
-    let renderContext = {
+    const renderContext = {
       canvasContext: ctx,
       viewport: viewport,
     };
-    let renderTask = page.render(renderContext);
+    const renderTask = page.render(renderContext);
 
     // Wait for rendering to finish
     renderTask.promise
@@ -69,14 +69,14 @@ pdfjsLib // getDocument data parameter requires a PDF in binary format, this is 
   .getDocument({ data: pdfBase64ToBinary })
   .promise.then(function (pdfDoc_) {
     pdfDoc = pdfDoc_;
-    let viewer = document.getElementById("pdf-viewer");
+    const viewer = document.getElementById("pdf-viewer");
 
     for (let page = 1; page <= pdfDoc_.numPages; page++) {
-      let canvas = document.createElement("canvas");
+      const canvas = document.createElement("canvas");
       canvas.className = "pdf-page-canvas";
       viewer.appendChild(canvas);
 
-      let textLayer = document.createElement("div");
+      const textLayer = document.createElement("div");
       textLayer.classList.add("textLayer");
       canvas.parentNode.insertBefore(textLayer, canvas.nextSibling);
 
