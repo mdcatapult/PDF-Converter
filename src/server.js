@@ -16,16 +16,14 @@ app.set("view engine", "html");
 app.set("views", __dirname);
 
 app.get("/html", (req, res) => {
-  //split on query param '?url' so we only retrieve the PDF URL from the full URL path
-  const extractPDFURl = req.url.split("?url=")[1];
+  const url = req.protocol + "://" + req.get("host") + req.originalUrl;
+  const pdfURL = new URL(url).searchParams.get("url");
 
-  if (!extractPDFURl.endsWith(".pdf")) {
+  if (!pdfURL.endsWith(".pdf")) {
     res.writeHead(400);
     res.end("error: invalid PDF format");
     return;
   }
-
-  const pdfURL = new URL(extractPDFURl);
 
   downloadPDF(pdfURL, outputFilename)
     .then(() => {
