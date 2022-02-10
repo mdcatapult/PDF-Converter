@@ -69,7 +69,7 @@ pdfjsLib // getDocument data parameter requires a PDF in binary format, this is 
   .promise.then(function (pdfDoc_) {
     // Remove the base64Encoded value from the DOM now that we have it, If we try to run NER on the page it will try and run through
     // this value when it doesn't need to.
-    pdfValue.remove()
+    pdfValue.remove();
     pdfDoc = pdfDoc_;
     const viewer = document.getElementById("pdf-viewer");
 
