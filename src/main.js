@@ -2,7 +2,6 @@
 const pdfjsLib = window["pdfjs-dist/build/pdf"];
 
 const pdfValue = document.getElementById("pdf-base_64_encoded-value");
-
 // We convert the base64 encoded pdf into bytes which we will pass into the getDocument method
 const pdfBase64ToBinary = atob(pdfValue.innerText);
 
@@ -68,6 +67,9 @@ pdfjsLib // getDocument data parameter requires a PDF in binary format, this is 
   //convert it to binary data via the atob() method above, See https://mozilla.github.io/pdf.js/api/draft/module-pdfjsLib.html
   .getDocument({ data: pdfBase64ToBinary })
   .promise.then(function (pdfDoc_) {
+    // Remove the PDF binary value from the DOM now that we have it, If we try to run NER on the page it will try and run through
+    // this value when it doesn't need to.
+    pdfValue.remove();
     pdfDoc = pdfDoc_;
     const viewer = document.getElementById("pdf-viewer");
 
