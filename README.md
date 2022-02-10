@@ -7,9 +7,9 @@ To start the application locally you can run `npm run start` which will start a 
 
 ## Endpoints
 
-The PDF-js converter service which is deployed on wopr as `https://pdf-js.wopr.inf.mdc` takes a sub domain path of   `/download-pdf` followed by a query parameter `/?url=` which points to
+The PDF-js converter service which is deployed on wopr as `https://pdf-js.wopr.inf.mdc` takes a sub domain path of `/html` followed by a query parameter `/?url=` which points to
 the location of the pdf. For example, if I wanted to convert this PDF http://www.africau.edu/images/default/sample.pdf to a HTML format, 
-I would type this into my browser: `https://pdf-js.wopr.inf.mdc/download-pdf/?url=http://www.africau.edu/images/default/sample.pdf`
+I would type this into my browser: `https://pdf-js.wopr.inf.mdc/html/?url=http://www.africau.edu/images/default/sample.pdf`
 
 ### Running locally
 
