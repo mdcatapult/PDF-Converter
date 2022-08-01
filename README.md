@@ -13,6 +13,10 @@ the location of the pdf. For example, if I wanted to convert this PDF http://www
 I would type this into my browser: `https://localhost:8000/html?url=http://www.africau.edu/images/default/sample.pdf`
 Response type `text/html`
 
+## Running prettier for formatting
+
+`npx prettier --write .`
+
 ### License
 
 This project is licensed under the terms of the Apache 2 license, which can be found in the repository as `LICENSE.txt`
