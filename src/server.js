@@ -38,7 +38,14 @@ app.get("/html", (req, res) => {
     res.end("error: invalid PDF format");
     return;
   }
-  const options = { uri: pdfURL, headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36' }, encoding: null }
+  const options = {
+    uri: pdfURL,
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36",
+    },
+    encoding: null,
+  };
   downloadPDF(options, outputFilename)
     .then(() => {
       pdf2base64(outputFilename).then((response) => {
@@ -56,7 +63,6 @@ app.get("/html", (req, res) => {
 app.listen(port, () => {
   console.log(`server is listening on port ${port}`);
 });
-
 
 async function downloadPDF(options, outputFilename) {
   let pdfBuffer = await request.get(options);
