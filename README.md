@@ -10,7 +10,7 @@ To start the application locally you can run `npm run start` which will start a 
 
 Endpoint `get` `/html` followed by a query parameter `?url=` which points to
 the location of the pdf. For example, if I wanted to convert this PDF http://www.africau.edu/images/default/sample.pdf to a HTML format,
-I would type this into my browser: `https://localhost:8000/html?url=http://www.africau.edu/images/default/sample.pdf`
+I would type this into my browser: `http://localhost:8000/html?url=http://www.africau.edu/images/default/sample.pdf`
 Response type `text/html`
 
 ## Running prettier for formatting
