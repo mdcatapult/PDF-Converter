@@ -19,7 +19,7 @@ Response type `text/html`
 
 ### Known issues
 
- - Only PDFs which end in `.pdf` can be converted at this time
+ - Only PDF URLs which end in `.pdf` can be converted at this time
 
 ### License
 
