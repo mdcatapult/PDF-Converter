@@ -33,11 +33,11 @@ app.get("/html", (req, res) => {
   // extract the PDF URL from the request URL
   const pdfURL = new URL(url).searchParams.get("url");
 
-  if (!pdfURL.endsWith(".pdf")) {
-    res.writeHead(400);
-    res.end("error: invalid PDF format");
-    return;
-  }
+  // if (!pdfURL.endsWith(".pdf")) {
+  //   res.writeHead(400);
+  //   res.end("error: invalid PDF format");
+  //   return;
+  // }
   const options = {
     uri: pdfURL,
     headers: {
@@ -56,7 +56,7 @@ app.get("/html", (req, res) => {
     })
     .catch((error) => {
       res.writeHead(500);
-      res.end(error);
+      res.end(JSON.stringify(error));
     });
 });
 
